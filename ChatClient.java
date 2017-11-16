@@ -1,17 +1,20 @@
 import java.net.*;
 import java.io.*;
 
+//ChatClient is run on client side 
 public class ChatClient implements Runnable
 {  private Socket socket              = null;
     private Thread thread              = null;
    private DataInputStream  console   = null;
    private DataOutputStream streamOut = null;
    private ChatClientThread client    = null;
-
+   
+   
+    //Constructor for ChatClient
    public ChatClient(String serverName, int serverPort)
       {
 	   System.out.println("");System.out.println("");
-	   System.out.println("..------------- NITK PACHI JAVA CHAT PROJECT ---------");
+	   System.out.println("..------------- JAVA CHATROOM ---------");
 	   System.out.println("Establishing connection. Please wait ...");
       try
       {  socket = new Socket(serverName, serverPort);
@@ -25,26 +28,15 @@ public class ChatClient implements Runnable
       catch(IOException ioe)
       {  System.out.println("Unexpected exception: " + ioe.getMessage());
       }
-      /*String line = "";
-      while (!line.equals(".bye"))
-      {  try
-         {  line = console.readLine();
-              //System.out.println( line);     changed
-              
-            streamOut.writeUTF( line);
-            streamOut.flush();
-         }
-         catch(IOException ioe)
-         {  System.out.println("Sending error: " + ioe.getMessage());
-         }
-      }*/
+      
    }
+   
+   //run method takes console input and pushes it into output datastream to server
    public void run()
    {  while (thread != null)
       {  try
          {  streamOut.writeUTF(console.readLine());
             streamOut.flush();
-            //System.out.println("\r");
          }
          catch(IOException ioe)
          {  System.out.println("Sending error: " + ioe.getMessage());
@@ -52,6 +44,8 @@ public class ChatClient implements Runnable
          }
       }
    }
+   
+   //Handles typed matter into the console
    public void handle(String msg)
    {  if (msg.equals(".bye"))
       {  System.out.println("Good bye. Press RETURN to exit ...");
@@ -60,6 +54,8 @@ public class ChatClient implements Runnable
       else
          System.out.print(msg);
    }
+   
+   //Creates input and output data streams and establishes threads
    public void start() throws IOException
    {  console   = new DataInputStream(System.in);
       streamOut = new DataOutputStream(socket.getOutputStream());
@@ -69,16 +65,8 @@ public class ChatClient implements Runnable
          thread.start();
       }
    }
-   /*public void stop()
-   {  try
-      {  if (console   != null)  console.close();
-         if (streamOut != null)  streamOut.close();
-         if (socket    != null)  socket.close();
-      }
-      catch(IOException ioe)
-      {  System.out.println("Error closing ...");
-      }
-   }*/
+   
+   //processes to be done before disconnection
    public void stop()
    {  if (thread != null)
       {  thread.stop();  
@@ -94,6 +82,8 @@ public class ChatClient implements Runnable
       client.close();  
       client.stop();
    }
+   
+   
    public static void main(String args[])
    {  ChatClient client = null;
       if (args.length != 2)

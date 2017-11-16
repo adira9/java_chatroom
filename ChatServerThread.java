@@ -7,10 +7,13 @@ public class ChatServerThread extends Thread
    private int             ID       = -1;
    private DataInputStream streamIn =  null;
    private DataOutputStream streamOut = null;
-   //private PrintStream Output = null; //change
+   
+   //Constructor to link client side server socket to ChatserverThread
    public ChatServerThread(ChatServer _server, Socket _socket)
    {  super();  server = _server;  socket = _socket;  ID = socket.getPort();
    }
+   
+   //method to send accepted input data out to users.
    public void send(String msg)
    {   try
        {  streamOut.writeUTF(msg);
@@ -22,18 +25,15 @@ public class ChatServerThread extends Thread
           stop();
        }
    }
+   
+   //Return id from ChatServerThread
    public int getID()
    {  return ID;
    }
+   
+   //during running call handle() on messages to be sent to connected users.
    public void run()
    {  System.out.println("Server Thread " + ID + " running.");
-      /*while (true)
-      {  try
-         {  System.out.println(streamIn.readUTF());
-         	//Output = new PrintStream(socket.getOutputStream()); //changed 
-         }
-         catch(IOException ioe) {  }
-      }*/
    while (true)
    {  try
       {  server.handle(ID, streamIn.readUTF());
@@ -45,10 +45,14 @@ public class ChatServerThread extends Thread
       }
    }
    }
+   
+   //Creates datainput and output streams connected to server
    public void open() throws IOException
    {  streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
    streamOut = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
    }
+   
+   //Method to close stream connections
    public void close() throws IOException
    {  if (socket != null)    socket.close();
       if (streamIn != null)  streamIn.close();
